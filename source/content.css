@@ -1115,3 +1115,11 @@ ul.rgh-issues-meta-report li span.rgh-issues-meta-clearFilter {
 	border-bottom: none;
     float: right;
 }
+
+.TableObject-item--primary {
+	display: flex;
+}
+
+.TableObject-item--primary .zh-milestone-link {
+	margin: 5px 10px;
+}
