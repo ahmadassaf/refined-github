@@ -83,6 +83,7 @@ import addPullRequestTaskList from './features/add-pull-request-task-list';
 import showFollowersYouKnow from './features/show-followers-you-know';
 import addBeameryAdvancedFilters from './features/add-beamery-advanced-filters';
 import beameryIssueMetaInspector from './features/beamery-issue-meta-inspector';
+import milestonesAnalytics from './features/milestones-analytics';
 
 import * as pageDetect from './libs/page-detect';
 import {safeElementReady, enableFeature, safeOnAjaxedPages, injectCustomCSS} from './libs/utils';
@@ -210,6 +211,7 @@ function ajaxedPagesHandler() {
 
 	if (pageDetect.isClosedMilestoneList()) {
 		enableFeature(addClosedMilestoneDueDate);
+		enableFeature(milestonesAnalytics);
 	}
 
 	if (pageDetect.isRepo()) {
