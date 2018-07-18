@@ -81,6 +81,8 @@ import openSelectionInNewTab from './features/add-selection-in-new-tab';
 import addClosedMilestoneDueDate from './features/add-closed-milestone-due-date';
 import addPullRequestTaskList from './features/add-pull-request-task-list';
 import showFollowersYouKnow from './features/show-followers-you-know';
+import addBeameryAdvancedFilters from './features/add-beamery-advanced-filters';
+import beameryIssueMetaInspector from './features/beamery-issue-meta-inspector';
 
 import * as pageDetect from './libs/page-detect';
 import {safeElementReady, enableFeature, safeOnAjaxedPages, injectCustomCSS} from './libs/utils';
@@ -257,6 +259,9 @@ function ajaxedPagesHandler() {
 
 	if (pageDetect.isIssueList()) {
 		enableFeature(addFilterCommentsByYou);
+		enableFeature(addBeameryAdvancedFilters);
+		// HACK ! this is a hack in order to wait for Zenhub API to reply first :(
+		setTimeout(() => {enableFeature(beameryIssueMetaInspector)}, 3000);
 	}
 
 	if (pageDetect.isIssueList() || pageDetect.isPR() || pageDetect.isIssue()) {

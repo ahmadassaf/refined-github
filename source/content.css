@@ -1042,3 +1042,76 @@ body > .footer li a {
 .rgh-taskList-completed .file-header .rgh-markTask {
 	color: #34d058;
 }
+
+.rgh-relative {
+	position: relative;
+}
+
+.beamery-icon {
+	position: absolute;
+    left: 10px;
+    top: 5px;
+}
+
+.rgh-hidden {
+	display: none !important;
+}
+
+.rgh-visible {
+	display: block !important;
+}
+
+.rgh-issues-meta-report-container {
+	padding: 10px;
+	border: 1px solid #d1d5da;
+	border-radius: 3px;
+	display: table;
+	width: 100%;
+}
+
+.rgh-issues-meta-report {
+    list-style: none;
+}
+
+.rgh-beamery-meta-report-title {
+	padding: 0 35px 10px;
+	position: relative;
+	overflow: hidden;
+}
+
+ul.rgh-issues-meta-report li span {
+	border-bottom: 1px dashed #ccc;
+	cursor: pointer;
+}
+
+ul.rgh-issues-meta-report li span:hover {
+	color: #0366d6;
+}
+
+.rgh-beamery-meta-report-icon {
+	position: absolute;
+    margin: 3px -35px;
+    color: #cb2431;
+}
+
+ul.rgh-issues-meta-report li {
+	display: block;
+	float: left;
+	clear: left;
+}
+
+ul.rgh-issues-meta-report li.rgh-selected-filter {
+    color: #28a745;
+}
+
+.rgh-issues-meta-clearFilter {
+	margin: 0 20px;
+	color: #6a737d;
+	cursor: pointer;
+	display: none;
+}
+
+ul.rgh-issues-meta-report li span.rgh-issues-meta-clearFilter {
+	border-bottom: none;
+    float: right;
+}
