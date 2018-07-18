@@ -206,12 +206,14 @@ function ajaxedPagesHandler() {
 
 	if (pageDetect.isMilestone()) {
 		enableFeature(addMilestoneNavigation); // Needs to be before sortMilestonesByClosestDueDate
-		setTimeout(() => {enableFeature(beameryIssueMetaInspector)}, 3000);
+		setTimeout(() => {
+			enableFeature(milestonesAnalytics)
+			enableFeature(beameryIssueMetaInspector)
+		}, 3000);
 	}
 
 	if (pageDetect.isClosedMilestoneList()) {
 		enableFeature(addClosedMilestoneDueDate);
-		enableFeature(milestonesAnalytics);
 	}
 
 	if (pageDetect.isRepo()) {
