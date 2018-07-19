@@ -14,7 +14,7 @@ export default function () {
         MULTIPLE_TYPES : {
             error: 'should not belong to more than one type',
             filter: (label) => {
-                return label.startsWith('2: Type:')    
+                return label.startsWith('03: Type:')    
             },
             condition: (filteredLabels) => {
                 return filteredLabels.length > 1
@@ -23,16 +23,16 @@ export default function () {
         ONE_PRODUCT_AREA: {
             error: 'should belong to at least one product area',
             filter: (label) => {
-                return label.startsWith('3: Product Area:');
+                return label.startsWith('02: Product Area:');
             },
             condition: (filteredLabels, labels) => {
-                return (labels.includes('2: Type: Bug', '2: Type: Story')) && !!filteredLabels.length
+                return (labels.includes('03: Type: Bug', '03: Type: Story')) && !!filteredLabels.length
             }
         },
         NO_BUGS_ESTIMATE: {
             error: 'defined as bugs and have estimates! Bugs should NOT have estimates',
             filter: (label) => {
-                return label === '2: Type: Bug'
+                return label === '03: Type: Bug'
             },
             condition: (filteredLabels, labels, issue) => {
                 return select('.zh-estimate-badge', issue)
@@ -41,7 +41,7 @@ export default function () {
         MISSING_ESTIMATES: {
             error: 'missing a proper estimate ⏱',
             filter: (label) => {
-                return label !== '2: Type: Bug' && label.startsWith('2: Type:')
+                return label !== '03: Type: Bug' && label.startsWith('03: Type:')
             },
             condition: (filteredLabels, labels, issue) => {
                 return !select('.zh-estimate-badge', issue)
@@ -50,7 +50,7 @@ export default function () {
         MULTIPLE_PRIOITIES: {
             error: 'has multiple priorities. Bugs should have ONLY one priority',
             filter: (label) => {
-                return label === '2: Type: Bug'
+                return label === '03: Type: Bug'
             },
             condition: (filteredLabels, labels, issue) => {
                 return labels.filter(label => {
@@ -61,7 +61,7 @@ export default function () {
         BUGS_MISSING_PRIORITIES: {
             error: 'defined as bugs and miss a priority 🚩',
             filter: (label) => {
-                return label === '2: Type: Bug'
+                return label === '03: Type: Bug'
             },
             condition: (filteredLabels, labels, issue) => {
                 return !labels.filter(label => {
@@ -72,7 +72,7 @@ export default function () {
         WRONG_ASSIGNMENT_OF_PRIORITY: {
             error: 'are not defined as bugs and have a priority 🚩 ONLY bugs have priority!',
             filter: (label) => {
-                return label !== '2: Type: Bug' && label.startsWith('2: Type:')
+                return label !== '03: Type: Bug' && label.startsWith('03: Type:')
             },
             condition: (filteredLabels, labels, issue) => {
                 return labels.filter(label => {
@@ -87,7 +87,7 @@ export default function () {
             },
             condition: (filteredLabels, labels, issue) => {
                 return labels.filter(label => {
-                    return label.startsWith('3: Product Area:')
+                    return label.startsWith('02: Product Area:')
                 }).length
             }
         }
