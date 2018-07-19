@@ -207,8 +207,8 @@ function ajaxedPagesHandler() {
 	if (pageDetect.isMilestone()) {
 		enableFeature(addMilestoneNavigation); // Needs to be before sortMilestonesByClosestDueDate
 		setTimeout(() => {
-			enableFeature(milestonesAnalytics)
-			enableFeature(beameryIssueMetaInspector)
+			enableFeature(milestonesAnalytics);
+			enableFeature(beameryIssueMetaInspector);
 		}, 3000);
 	}
 
