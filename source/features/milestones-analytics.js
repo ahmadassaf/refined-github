@@ -1,5 +1,6 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
+<<<<<<< HEAD
 import {get, flattenDeep, reverse, sortBy, reduce, forEach, set, keyBy, countBy, keys, filter, merge} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 import graph from '../libs/graph';
