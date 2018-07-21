@@ -1,13 +1,19 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
-<<<<<<< HEAD
-import {get, flattenDeep, reverse, sortBy, reduce, forEach, set, keyBy, countBy, keys, filter, merge} from 'lodash';
+import {get, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 import graph from '../libs/graph';
 import {getOwnerAndRepo} from '../libs/page-detect';
-import {chart, bug, commit, flame, threebars} from '../libs/icons';
+import {bug, commit, threebars} from '../libs/icons';
 
 export default async () => {
+
+    const milestoneZenhubBoardLink = select('.zh-milestone-link');
+    const boardLink = select('a', milestoneZenhubBoardLink).href;
+    select('.TableObject-item--primary h2').append(
+        <a aria-label="See this milestone on the board" alt="See this milestone on the board" class="rgh-zenhub-board-link" href={boardLink}>{threebars()}</a>
+    );
+    milestoneZenhubBoardLink.parentNode.removeChild(milestoneZenhubBoardLink);
 
     const {ownerName, repoName} = getOwnerAndRepo();
     const milestoneNumber = location.href.split('?')[0].split('/').pop();
@@ -110,7 +116,7 @@ export default async () => {
 
     const leaderboard = buildLeaderboard(closedIssues);
     const shameboard = buildLeaderboard(openIssues);
-    
+
     const issuesTable = select('.repository-content .mb-3 .three-fourths');
     issuesTable.parentNode.insertBefore(
     <div class="rgh-milestone-report-container">

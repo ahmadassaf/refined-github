@@ -1188,3 +1188,9 @@ span.rgh-main-metric.iconless {
 .green-pill {
 	background: #28a745;
 }
+
+.rgh-zenhub-board-link {
+	position: absolute;
+    margin: 12px 15px;
+    color: #000000;
+}
