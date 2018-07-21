@@ -80,6 +80,13 @@ export default function () {
                 }).length
             } 
         },
+        NO_ASSIGNEES: {
+            error: "do not have any assignees 😤",
+            filter: (label) => {return label},
+            condition: (filteredLabels, labels, issue) => {
+                return !select.all('.avatar', issue).length
+            }
+        },
         EPICS_METADATA: {
             error: 'are defined as epics and have a product area attached. Epics should be containers only and should NOT have additional info',
             filter: (label) => {

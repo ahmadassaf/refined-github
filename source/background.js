@@ -8,6 +8,7 @@ new OptionsSync().define({
 		disabledFeatures: '',
 		customCSS: '',
 		personalToken: '',
+		zenhubToken: '',
 		logging: false
 	},
 	migrations: [

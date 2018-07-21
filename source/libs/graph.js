@@ -1,3 +1,4 @@
+import {get} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 
 const cache = new Map();
@@ -20,14 +21,21 @@ export default async query => {
 			headers,
 			body: JSON.stringify({query})
 		});
-		const {data} = await response.json();
-		cache.set(query, data);
-		return data;
+		
+		const graphResponse = await response.json();
+		
+		if (graphResponse.errors) {
+			console.error(graphResponse.errors[0].message);
+			return null;
+		} else {
+			cache.set(query, graphResponse.data);
+			return graphResponse.data;
+		}
 	} catch (error) {
 		const errorObject = JSON.parse(JSON.stringify(error));
-		if (errorObject.response.status) {
-			console.log(`Refined GitHub couldn’t access this endpoint as it requires you to be authenticated ⛔. Please make sure you have a valid access token (check ${errorObject.response.documentation_url})`);
-		}
+		if (get(errorObject, 'response.status')) {
+			console.error(`Refined GitHub couldn’t access this endpoint as it requires you to be authenticated ⛔. Please make sure you have a valid access token (check ${errorObject.response.documentation_url})`);
+		} else console.error(error);
 		return null;
 	}
 };
