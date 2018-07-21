@@ -39,7 +39,7 @@ export default function () {
             }
         },
         MISSING_ESTIMATES: {
-            error: 'missing a proper estimate ⏱',
+            error: 'missing an estimate ⏱',
             filter: (label) => {
                 return label !== '03: Type: Bug' && label.startsWith('03: Type:')
             },

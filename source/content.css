@@ -1194,3 +1194,21 @@ span.rgh-main-metric.iconless {
     margin: 12px 15px;
     color: #000000;
 }
+
+.rgh-inline-chart, .rgh-charts-row {
+	display: block;
+	width: 100%;
+	font-weight: 600;
+}
+
+.rgh-metric-row .progress-bar-small {
+    width: 100%;
+}
+
+span.rgh-inline-chart > div {
+    margin: 5px 0;
+}
+
+.rgh-charts-row {
+    margin: 10px 0;
+}

@@ -1,6 +1,6 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
-import {get, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
+import {get, each, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 import graph from '../libs/graph';
 import {getOwnerAndRepo} from '../libs/page-detect';
@@ -10,10 +10,12 @@ export default async () => {
 
     const milestoneZenhubBoardLink = select('.zh-milestone-link');
     const boardLink = select('a', milestoneZenhubBoardLink).href;
-    select('.TableObject-item--primary h2').append(
-        <a aria-label="See this milestone on the board" alt="See this milestone on the board" class="rgh-zenhub-board-link" href={boardLink}>{threebars()}</a>
-    );
-    milestoneZenhubBoardLink.parentNode.removeChild(milestoneZenhubBoardLink);
+    if (boardLink) {
+        select('.TableObject-item--primary h2').append(
+            <a aria-label="See this milestone on the board" alt="See this milestone on the board" class="rgh-zenhub-board-link" href={boardLink}>{threebars()}</a>
+        );
+        milestoneZenhubBoardLink.parentNode.removeChild(milestoneZenhubBoardLink);
+    }
 
     const {ownerName, repoName} = getOwnerAndRepo();
     const milestoneNumber = location.href.split('?')[0].split('/').pop();
@@ -67,6 +69,7 @@ export default async () => {
     // After making sure we have all the data merged from github and zenhub, calculate all the metrics !
     const closedIssues = filter(milestoneInformation, issue =>  issue.node.state === 'CLOSED');
     const openIssues = filter(milestoneInformation, issue =>  issue.node.state === 'OPEN');
+    const labelsMap = countBy(flattenDeep(closedIssues.map(issue => get(issue, 'node.labels.edges', []))), 'node.name');
     const totalBugs = filter(milestoneInformation, issue => {
         return issue.node.labels.edges.filter(label => {
             return label.node.name === '03: Type: Bug';
@@ -89,6 +92,39 @@ export default async () => {
     const closedIssuesEstimate = closedIssues.reduce((accumulator, currentValue) => {
         return accumulator + (currentValue.estimate || 0 )
     }, 0);
+        
+    /*
+    * @function getLabelsChart
+    * @description Gets the total number of labels for a certain label pattern
+    */
+   const getLabelsChart = (labelsMap, labelFilter) => {  
+        const COLORS_MAP = ['green', 'blue', 'purple', 'orange', 'red'];
+        let stackedBar = [], tooltip = '', colorIndex = -1;
+        const total = filter(labelsMap, (count, label) => label.startsWith(labelFilter)).reduce((a, b) => a + b, 0);
+        const getRandomColor = () => {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+        each(labelsMap, (value, label) => {
+            if (label.startsWith(labelFilter)) {
+                const style = {
+                    width: `${Math.floor(value / total * 100)}%`,
+                    background: COLORS_MAP[++colorIndex] || getRandomColor()
+                };
+                tooltip += `${value} ${label.replace(labelFilter, '').trim()} / `;
+                stackedBar.push(<span class="progress d-inline-block" style={style}>&nbsp;</span>);
+            }
+        });
+        return {stackedBar, tooltip};
+    }
+    
+    const totalNumberOfBugs = getLabelsChart(labelsMap, '01: Priority:'); 
+    const totalNumberOfTypes = getLabelsChart(labelsMap, '03: Type:');
+    const totalNumberOfProductAreas = getLabelsChart(labelsMap, '02: Product Area:');
 
     /*
     * @function buildLeaderboard
@@ -139,8 +175,8 @@ export default async () => {
         </div>
     </div>, issuesTable);
     
-
-    select('.repository-content .three-fourths').append(
+    const issuesTableText = select('.repository-content .three-fourths');
+    issuesTableText.append(
         <span>
             <span class="rgh-inline-metric">
                 <span class="rgh-main-metric iconless">Leaderboard 🏆</span>
@@ -160,4 +196,32 @@ export default async () => {
             </span>
         </span>
     );
+
+    issuesTableText.parentNode.insertBefore(
+    <div class="rgh-charts-row">
+        <span class="rgh-inline-chart">
+            Closed Bugs
+            <div class="tooltipped tooltipped-s" aria-label={totalNumberOfBugs.tooltip.trim().replace(/.$/, '')}>
+                <span class="progress-bar progress-bar-small">
+                    {totalNumberOfBugs.stackedBar}
+                </span>
+            </div>
+        </span>
+        <span class="rgh-inline-chart">
+            Closed Issues by type
+            <div class="tooltipped tooltipped-s" aria-label={totalNumberOfTypes.tooltip.trim().replace(/.$/, '')}>
+                <span class="progress-bar progress-bar-small">
+                    {totalNumberOfTypes.stackedBar}
+                </span>
+            </div>
+        </span>
+        <span class="rgh-inline-chart">
+            Closed issues by product area
+            <div class="tooltipped tooltipped-s" aria-label={totalNumberOfProductAreas.tooltip.trim().replace(/.$/, '')}>
+                <span class="progress-bar progress-bar-small">
+                    {totalNumberOfProductAreas.stackedBar}
+                </span>
+            </div>
+        </span>
+    </div>, issuesTableText.nextSibling)
 };
