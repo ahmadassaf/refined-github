@@ -149,7 +149,7 @@ export default function () {
         const issuesTable = select('.table-list-header');
         issuesTable.parentNode.insertBefore(
         <div class="rgh-issues-meta-report-container">
-            <h3 class="rgh-beamery-meta-report-title">{stop()} Issues meta report</h3>
+            <h3 class="rgh-beamery-meta-report-title">Issues meta report</h3>
             <ul class="rgh-issues-meta-report">{errors}</ul>
         </div>, issuesTable);
     }

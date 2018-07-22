@@ -1,12 +1,8 @@
 import {get} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 
-const cache = new Map();
-
 export default async query => {
-	if (cache.has(query)) {
-		return cache.get(query);
-	}
+	
 	const headers = {
 		'User-Agent': 'Refined GitHub'
 	};
@@ -28,7 +24,6 @@ export default async query => {
 			console.error(graphResponse.errors[0].message);
 			return null;
 		} else {
-			cache.set(query, graphResponse.data);
 			return graphResponse.data;
 		}
 	} catch (error) {

@@ -83,6 +83,7 @@ import addPullRequestTaskList from './features/add-pull-request-task-list';
 import showFollowersYouKnow from './features/show-followers-you-know';
 import addBeameryAdvancedFilters from './features/add-beamery-advanced-filters';
 import beameryIssueMetaInspector from './features/beamery-issue-meta-inspector';
+import milestoneAnalytics from './features/milestone-analytics';
 import milestonesAnalytics from './features/milestones-analytics';
 
 import * as pageDetect from './libs/page-detect';
@@ -207,13 +208,23 @@ function ajaxedPagesHandler() {
 	if (pageDetect.isMilestone()) {
 		enableFeature(addMilestoneNavigation); // Needs to be before sortMilestonesByClosestDueDate
 		setTimeout(() => {
-			enableFeature(milestonesAnalytics);
+			enableFeature(milestoneAnalytics);
 			enableFeature(beameryIssueMetaInspector);
 		}, 3000);
 	}
 
 	if (pageDetect.isClosedMilestoneList()) {
 		enableFeature(addClosedMilestoneDueDate);
+		setTimeout(() => {
+			enableFeature(milestonesAnalytics);
+		}, 1000);
+	}
+
+	if (pageDetect.isMilestoneList()) {
+		enableFeature(addClosedMilestoneDueDate);
+		setTimeout(() => {
+			enableFeature(milestonesAnalytics);
+		}, 1000);
 	}
 
 	if (pageDetect.isRepo()) {

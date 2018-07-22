@@ -1075,7 +1075,6 @@ body > .footer li a {
 }
 
 .rgh-beamery-meta-report-title {
-	padding: 0 35px 10px;
 	position: relative;
 	overflow: hidden;
 }
@@ -1211,4 +1210,8 @@ span.rgh-inline-chart > div {
 
 .rgh-charts-row {
     margin: 10px 0;
+}
+
+span.rgh-inline-chart .progress-bar-small {
+	height: 5px;
 }

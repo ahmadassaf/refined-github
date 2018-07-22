@@ -22,6 +22,15 @@ export function safeOnAjaxedPages(callback) {
 	});
 }
 
+export const getRandomColor = () => {
+	var letters = '0123456789ABCDEF';
+	var color = '#';
+	for (var i = 0; i < 6; i++) {
+	color += letters[Math.floor(Math.random() * 16)];
+	}
+	return color;
+}
+
 /**
  * Enable toggling each feature via options.
  * Prevent fn's errors from blocking the remaining tasks.
@@ -50,6 +59,13 @@ export const enableFeature = async fn => {
 export const isFeatureEnabled = async featureName => {
 	const {disabledFeatures = ''} = await options;
 	return disabledFeatures.includes(featureName);
+};
+
+export const hashCode = (s)  => {
+	return s.split('').reduce((a, b) => {
+		a = ((a << 5) - a) + b.charCodeAt(0);
+		return a & a;
+	}, 0);
 };
 
 export const getUsername = onetime(() => select('meta[name="user-login"]').getAttribute('content'));

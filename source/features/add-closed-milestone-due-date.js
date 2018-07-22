@@ -41,25 +41,29 @@ export default async () => {
 	}
 	for (const milestone of select.all('.milestone')) {
 		const milestoneLink = select.all('.milestone-title-link a', milestone);
+		const milestoneNumber = milestoneLink[0].href.split('/').pop();
 		const milestoneClosedDate = select('.milestone-meta-item', milestone);
-		const _milestone = milestones[milestoneLink[0].href.split('/').pop()];
+		const _milestone = milestones[milestoneNumber];
 
-		// Remove the lastUpdated on metadata item
-		select.all('.milestone-meta-item', milestone)[1].remove();
-		// Add the CreatedOn metadata item
-		select.all('.milestone-meta', milestone)[0].append(
-			<span class="milestone-meta-item">
-				<span class="mr-1">{clock()}</span> Created on {dateToMDY(new Date(_milestone.createdAt))}
-			</span>
-		);
-		// Add the dueOn metadata item
-		if (_milestone.dueOn) {
+		if (_milestone) {
+			// Remove the lastUpdated on metadata item
+			select.all('.milestone-meta-item', milestone)[1].remove();
+			// Add the CreatedOn metadata item
 			select.all('.milestone-meta', milestone)[0].append(
 				<span class="milestone-meta-item">
-					<span class="mr-1">{calendar()}</span> Was due on {dateToMDY(new Date(_milestone.dueOn))}
+					<span class="mr-1">{clock()}</span> Created on {dateToMDY(new Date(_milestone.createdAt))}
 				</span>
 			);
+			// Add the dueOn metadata item
+			if (_milestone.dueOn) {
+				select.all('.milestone-meta', milestone)[0].append(
+					<span class="milestone-meta-item">
+						<span class="mr-1">{calendar()}</span> Was due on {dateToMDY(new Date(_milestone.dueOn))}
+					</span>
+				);
+			}
+			milestoneClosedDate.classList.add('text-red');
 		}
-		milestoneClosedDate.classList.add('text-red');
+		milestone.classList.add(`milestone-${milestoneNumber}`);
 	}
 };
