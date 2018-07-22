@@ -8,7 +8,8 @@ module.exports = () => ({
 	entry: {
 		content: './source/content',
 		background: './source/background',
-		options: './source/options'
+		options: './source/options',
+		styles: './source/styles/rgh.scss'
 	},
 	output: {
 		path: path.join(__dirname, 'distribution'),
@@ -20,6 +21,26 @@ module.exports = () => ({
 				test: /\.js$/,
 				exclude: /node_modules/,
 				loader: 'babel-loader'
+			},{
+				test: /\.scss$/,
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: '[name].css',
+							outputPath: 'css/'
+						}
+					},
+					{
+						loader: 'extract-loader'
+					},
+					{
+						loader: 'css-loader'
+					},
+					{
+						loader: 'sass-loader'
+					}
+				]
 			}
 		]
 	},

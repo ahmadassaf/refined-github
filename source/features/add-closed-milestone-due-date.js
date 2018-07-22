@@ -1,17 +1,11 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
 import {getOwnerAndRepo} from '../libs/page-detect';
+import {dateToMDY} from '../libs/utils';
 import graph from '../libs/graph';
 import {calendar, clock} from '../libs/icons';
 
 export default async () => {
-	function dateToMDY(date) {
-		const strArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-		const d = date.getDate();
-		const m = strArray[date.getMonth()];
-		const y = date.getFullYear();
-		return `${m} ${(d <= 9 ? '0' + d : d)} , ${y}`;
-	}
 
 	const {ownerName, repoName} = getOwnerAndRepo();
 	const milestonesObjects = select.all('div.milestone');
@@ -44,7 +38,7 @@ export default async () => {
 		const milestoneNumber = milestoneLink[0].href.split('/').pop();
 		const milestoneClosedDate = select('.milestone-meta-item', milestone);
 		const _milestone = milestones[milestoneNumber];
-
+		
 		if (_milestone) {
 			// Remove the lastUpdated on metadata item
 			select.all('.milestone-meta-item', milestone)[1].remove();

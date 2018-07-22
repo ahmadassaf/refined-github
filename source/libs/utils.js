@@ -80,6 +80,14 @@ export const groupBy = (iterable, grouper) => {
 	return map;
 };
 
+export const dateToMDY = (date) => {
+	const strArray = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+	const d = date.getDate();
+	const m = strArray[date.getMonth()];
+	const y = date.getFullYear();
+	return `${m} ${(d <= 9 ? '0' + d : d)} , ${y}`;
+}
+
 /**
  * Automatically stops checking for an element to appear once the DOM is ready.
  */
