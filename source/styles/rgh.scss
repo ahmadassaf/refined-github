@@ -173,6 +173,23 @@ svg.octicon-flame {
     color: #000000;
 }
 
+.milestone {
+
+    .rgh-milestone-report-container, .rgh-leaderboard-container {
+        display: none;
+    }
+    &.analytics-enabled {
+        .rgh-milestone-report-container, .rgh-leaderboard-container {
+            display: flex;
+        }   
+    }
+}
+
+.rgh-analytics-toggle {
+    color: #28a745;
+    cursor: pointer;
+    margin: 0 5px;
+}
 
 /* Overrides */
 

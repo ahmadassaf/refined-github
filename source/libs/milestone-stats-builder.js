@@ -1,23 +1,27 @@
 import {h} from 'dom-chef';
-import {get, each, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
+import {get, each, size, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 import {getRandomColor} from './utils';
 import {bug, commit, flame} from './icons';
 
-export const milestoneStatsBuilder = async(repo, githubBoard) => {
-    const zenhubFormData = `issue_numbers%5B%5D=${keys(githubBoard).join('&issue_numbers%5B%5D=')}`;
-    const zenhub = await fetch(`https://api.zenhub.io/v4/repositories/${repo.id}/issues/pipelines-estimates`, {
-            method: 'POST',
-            headers: {
-                    'x-authentication-token': '68d58e034dc7bc62576008c95cdd1c9142030b46a6398aa2a56177f2c8e392596309b052c615f38e',
-                    'User-Agent': 'Refined Github',
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            },
-            body: zenhubFormData
-    });
-    
-    const zenhubBoardEstimates = keyBy(await zenhub.json(), 'number');
-    const milestoneInformation = merge(githubBoard, zenhubBoardEstimates);
+export const milestoneStatsBuilder = async(repo, githubBoard, milestoneInformation = {}) => {
+
+	if (!size(milestoneInformation)) {
+
+		const zenhubFormData = `issue_numbers%5B%5D=${keys(githubBoard).join('&issue_numbers%5B%5D=')}`;
+		const zenhub = await fetch(`https://api.zenhub.io/v4/repositories/${repo.id}/issues/pipelines-estimates`, {
+				method: 'POST',
+				headers: {
+						'x-authentication-token': '68d58e034dc7bc62576008c95cdd1c9142030b46a6398aa2a56177f2c8e392596309b052c615f38e',
+						'User-Agent': 'Refined Github',
+						'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+				},
+				body: zenhubFormData
+		});
+		
+		const zenhubBoardEstimates = keyBy(await zenhub.json(), 'number');
+		milestoneInformation = merge(githubBoard, zenhubBoardEstimates);
+	} 
     
     // After making sure we have all the data merged from github and zenhub, calculate all the metrics !
     const closedIssues = filter(milestoneInformation, issue =>  issue.node.state === 'CLOSED');
@@ -109,12 +113,12 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedBugs.length} Closed</span>
             </div>
             <div class="rgh-metric">
-                <span class="rgh-metric__main">{commit()} {processBreaks.length} Process breaks</span>
+                <span class="rgh-metric__main">{commit()} {processBreaks.length} Process Breaks</span>
                 <span class="rgh-metric__pill rgh-metric__pill-green">{processBreaks.length - closedProcessBreaks.length} Open</span>
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedProcessBreaks.length} Closed</span>
             </div>
             <div class="rgh-metric">
-                <span class="rgh-metric__main">{flame()} Velocity {velocity}%</span>
+                <span class="rgh-metric__main">{flame()} Success Rate {velocity}%</span>
                 <span class="rgh-metric__pill rgh-metric__pill-green">{totalIssuesEstimate} Commited</span>
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedIssuesEstimate} Closed</span>
             </div>
@@ -169,5 +173,5 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
             </div>
         </span>
 	}
-    return {milestoneStats, milestoneLeaderboard, milestoneShameboard};
+    return {milestoneStats, milestoneLeaderboard, milestoneShameboard, milestoneInformation};
 }

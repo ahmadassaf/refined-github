@@ -15,7 +15,7 @@ export default async () => {
 		select('.table-list-header-toggle').append(
 			<div class="rgh-milestone-loader">{spinner()} Loading milestones data</div>
 		);
-		
+		let totalMilestoneInformation = {};
 		const {ownerName, repoName} = getOwnerAndRepo();
 		const repoInformation = await api(`repos/${ownerName}/${repoName}`); 
 		const state = location.href.includes('state=closed') ? 'CLOSED' : 'OPEN';
@@ -25,19 +25,59 @@ export default async () => {
 
 		for (const milestoneNumber in githubBoard) {
 			const milestoneElement = select(`.milestone-${milestoneNumber}`);
+
+			const showAnalytics = event => {
+				event.stopPropagation();
+				const targetElement = event.target || event.srcElement;
+				const _milestoneNumber = targetElement.getAttribute('data-milestone-number');
+				const milestoneElement = select(`.milestone-${_milestoneNumber}`);
+				
+				milestoneElement.classList.contains('analytics-enabled') ? milestoneElement.classList.remove('analytics-enabled') : milestoneElement.classList.add('analytics-enabled');
+			}
+			select('.f5.mt-2', milestoneElement).append(
+				<a class="d-inline-block mr-2 rgh-analytics-toggle" data-milestone-number={milestoneNumber} onClick={showAnalytics} >Analytics</a>
+			);
 			
 			if (!select.all('.milestone-stats-container', milestoneElement).length) {
 				const _githubBoard = keyBy(get(githubBoard[milestoneNumber], 'node.issues.edges'), 'node.number');
-				const {milestoneStats, milestoneLeaderboard, milestoneShameboard} = await milestoneStatsBuilder(repoInformation, _githubBoard);
+				const {milestoneStats, milestoneLeaderboard, milestoneShameboard, milestoneInformation} = await milestoneStatsBuilder(repoInformation, _githubBoard);
+				totalMilestoneInformation = Object.assign({}, totalMilestoneInformation, milestoneInformation);
 				
 				milestoneElement.append(<div class="milestone-stats-container">{milestoneStats}</div>);
+				
 				const milestoneContainer = select('.milestone-stats-container', milestoneElement);
 				// Based on the availability of leaderboard or shameboard data ..
-				(milestoneLeaderboard || milestoneShameboard) && milestoneContainer.append(<span class="rgh-leaderboard">Leaderboard</span>)
-				milestoneLeaderboard && milestoneContainer.append(milestoneLeaderboard);
-				milestoneShameboard && milestoneContainer.append(milestoneShameboard);
+				if (milestoneLeaderboard || milestoneShameboard) {
+					const milestoneLeaderboardDOM = milestoneLeaderboard ? milestoneLeaderboard : <i></i>;
+					const milestoneShameboardDOM = milestoneShameboard ? milestoneShameboard : <i></i>;
+					milestoneContainer.append(
+						<div class="rgh-leaderboard-container">
+							<span class="rgh-leaderboard">Leaderboard</span>
+							{milestoneLeaderboardDOM}
+							{milestoneShameboardDOM}
+						</div>
+					)
+				} 
 			}
 		};
+
 		select('.table-list-header-toggle').removeChild(select('.rgh-milestone-loader'));
+		
+		const totalMilestoneStats = await milestoneStatsBuilder(repoInformation, {}, totalMilestoneInformation);
+		const leaderboardContainer = select('.repository-content .table-list-header');
+		
+		leaderboardContainer.parentNode.insertBefore(totalMilestoneStats.milestoneStats, leaderboardContainer);
+		// Based on the availability of leaderboard or shameboard data ..
+		if (totalMilestoneStats.milestoneLeaderboard || totalMilestoneStats.milestoneShameboard) {
+			leaderboardContainer.parentNode.insertBefore(
+				(
+					<div class="rgh-leaderboard-container">
+						<span class="rgh-leaderboard">Leaderboard</span>
+						{totalMilestoneStats.milestoneLeaderboard}
+						{totalMilestoneStats.milestoneShameboard}
+					</div>
+				)
+				, leaderboardContainer);
+		}
 	}
 };
