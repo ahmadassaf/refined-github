@@ -120,7 +120,7 @@ svg.octicon.octicon-bug, svg.octicon-commit, svg.octicon-flame {
 					cursor: pointer;
 					width: 100%;
 					height: 6px;
-    				border-radius: 0;
+    				border-radius: 2px;
 				}
 			}
 
@@ -170,8 +170,11 @@ svg.octicon.octicon-bug, svg.octicon-commit, svg.octicon-flame {
 
 .rgh-metric__leaderboard {
 	margin: 0 10px;
-	.AvatarStack .AvatarStack-body {
-		position: relative;
+
+	&.AvatarStack {
+		div.AvatarStack-body {
+			position: relative !important;
+		}
 	}
 }
 
@@ -218,3 +221,49 @@ svg.octicon.octicon-bug, svg.octicon-commit, svg.octicon-flame {
 		border-top: none;
 	}
 }
+/* Spinner */
+
+.rgh-milestone-loader {
+    display: inline;
+    position: relative;
+    margin: 0 10px;
+    color: #6a737d;
+}
+
+.lds-ring {
+	display: inline-block;
+	position: absolute;
+    right: -70px;
+    top: -6px;
+	width: 64px;
+	height: 64px;
+  }
+  .lds-ring div {
+	box-sizing: border-box;
+	display: block;
+	position: absolute;
+    width: 20px;
+    height: 20px;
+	margin: 6px;
+	border: 2px solid #959da5;
+	border-radius: 50%;
+	animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+	border-color: #959da5 transparent transparent transparent;
+  }
+  .lds-ring div:nth-child(1) {
+	animation-delay: -0.45s;
+  }
+  .lds-ring div:nth-child(2) {
+	animation-delay: -0.3s;
+  }
+  .lds-ring div:nth-child(3) {
+	animation-delay: -0.15s;
+  }
+  @keyframes lds-ring {
+	0% {
+	  transform: rotate(0deg);
+	}
+	100% {
+	  transform: rotate(360deg);
+	}
+  }

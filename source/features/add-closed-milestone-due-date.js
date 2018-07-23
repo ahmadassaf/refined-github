@@ -58,6 +58,6 @@ export default async () => {
 			}
 			milestoneClosedDate.classList.add('text-red');
 		}
-		milestone.classList.add(`milestone-${milestoneNumber}`);
+		milestone.classList.add(`milestone-${milestoneNumber}`, 'extended-milestone');
 	}
 };

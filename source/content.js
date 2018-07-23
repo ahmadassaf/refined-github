@@ -213,13 +213,6 @@ function ajaxedPagesHandler() {
 		}, 3000);
 	}
 
-	if (pageDetect.isClosedMilestoneList()) {
-		enableFeature(addClosedMilestoneDueDate);
-		setTimeout(() => {
-			enableFeature(milestonesAnalytics);
-		}, 1000);
-	}
-
 	if (pageDetect.isMilestoneList()) {
 		enableFeature(addClosedMilestoneDueDate);
 		setTimeout(() => {
