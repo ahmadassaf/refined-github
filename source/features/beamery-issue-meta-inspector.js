@@ -1,6 +1,6 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
-import { stop, trashcan } from '../libs/icons';
+import {trashcan} from '../libs/icons';
 
 export default function () {
     /* We need to start checking foe issues meta information issues
@@ -22,11 +22,9 @@ export default function () {
         },
         ONE_PRODUCT_AREA: {
             error: 'should belong to at least one product area',
-            filter: (label) => {
-                return label.startsWith('02: Product Area:');
-            },
-            condition: (filteredLabels, labels) => {
-                return (labels.includes('03: Type: Bug', '03: Type: Story')) && !!filteredLabels.length
+            filter: (label) => {return label},
+            condition: (filteredLabels, labels, issue) => {
+                return ['03: Type: Bug', '03: Type: Story'].some( c => labels.includes(c)) && !(labels.filter(label => label.startsWith('02: Product Area:'))).length
             }
         },
         NO_BUGS_ESTIMATE: {
@@ -44,7 +42,14 @@ export default function () {
                 return label !== '03: Type: Bug' && label.startsWith('03: Type:')
             },
             condition: (filteredLabels, labels, issue) => {
-                return !select('.zh-estimate-badge', issue)
+                return !select.all('.zh-estimate-badge', issue).length
+            }
+        },
+        MISSING_MILESTONE: {
+            error: 'should belong to a milestone  🏁',
+            filter: (label) => {return label},
+            condition: (filteredLabels, labels, issue) => {
+                return !select.all('.milestone-link', issue).length
             }
         },
         MULTIPLE_PRIOITIES: {
@@ -54,7 +59,7 @@ export default function () {
             },
             condition: (filteredLabels, labels, issue) => {
                 return labels.filter(label => {
-                    return label.startsWith('1: Priority:')
+                    return label.startsWith('01: Priority:')
                 }).length > 1
             }
         },
@@ -65,7 +70,7 @@ export default function () {
             },
             condition: (filteredLabels, labels, issue) => {
                 return !labels.filter(label => {
-                    return label.startsWith('1: Priority:')
+                    return label.startsWith('01: Priority:')
                 }).length
             }
         },
@@ -76,7 +81,7 @@ export default function () {
             },
             condition: (filteredLabels, labels, issue) => {
                 return labels.filter(label => {
-                    return label.startsWith('1: Priority:')
+                    return label.startsWith('01: Priority:')
                 }).length
             } 
         },

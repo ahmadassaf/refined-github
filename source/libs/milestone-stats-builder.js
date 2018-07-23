@@ -45,21 +45,21 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
     const closedIssuesEstimate = closedIssues.reduce((accumulator, currentValue) => {
             return accumulator + (currentValue.estimate || 0 )
     }, 0);
-            
+    const velocity = Math.floor( closedIssuesEstimate/totalIssuesEstimate *  100 ) || 0;
     /*
     * @function getLabelsChart
     * @description Gets the total number of labels for a certain label pattern
     */
-    const getLabelsChart = (labelsMap, labelFilter) => {
-        let stackedBar = [], tooltip = '', colorIndex = -1;
+    const getLabelsChart = (lbelsMap, labelFilter) => {
+        let stackedBar = [], tooltip = '', colorindex = -1;
         const total = filter(labelsMap, (count, label) => label.startsWith(labelFilter)).reduce((a, b) => a + b, 0);
-        const COLORS_MAP = ['#2cbe4e', '#0366d6', '#800080', '#d93f0b', '#cb2431'];
+        const colorsMap = ['#2cbe4e', '#0366d6', '#800080', '#d93f0b', '#cb2431'];
         
         each(labelsMap, (value, label) => {
             if (label.startsWith(labelFilter)) {
                 const style = {
                     width: `${Math.floor(value / total * 100)}%`,
-                    background: COLORS_MAP[++colorIndex] || getRandomColor()
+                    background: colorsMap[++colorindex] || getRandomColor()
                 };
                 tooltip += `${value} ${label.replace(labelFilter, '').trim()} / `;
                 stackedBar.push(<span class="progress d-inline-block" style={style}>&nbsp;</span>);
@@ -98,7 +98,8 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
     }
     
     const leaderboard = buildLeaderboard(closedIssues);
-    const shameboard = buildLeaderboard(openIssues);
+	const shameboard = buildLeaderboard(openIssues);
+	
     const milestoneStats =     
     <div class="rgh-milestone-report-container">
         <div class="rgh-metric-column">
@@ -113,7 +114,7 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedProcessBreaks.length} Closed</span>
             </div>
             <div class="rgh-metric">
-                <span class="rgh-metric__main">{flame()} Velocity {Math.floor( closedIssuesEstimate/totalIssuesEstimate *  100 )}%</span>
+                <span class="rgh-metric__main">{flame()} Velocity {velocity}%</span>
                 <span class="rgh-metric__pill rgh-metric__pill-green">{totalIssuesEstimate} Commited</span>
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedIssuesEstimate} Closed</span>
             </div>
@@ -146,25 +147,27 @@ export const milestoneStatsBuilder = async(repo, githubBoard) => {
         </div>
     </div>;
 
-    const milestoneLeaderboard =         
-    <span>
-        <span class="rgh-metric__inline">
-            <span class="rgh-metric__main-iconless">Leaderboard 🏆</span>
-            <div class="rgh-metric__leaderboard AvatarStack AvatarStack--left">
-                <div class="AvatarStack-body tooltipped tooltipped-sw tooltipped-multiline tooltipped-align-right-1" aria-label={leaderboard.message}>
-                    {leaderboard.board}
-                </div>
-            </div>
-        </span>
-        <span class="rgh-metric__inline">
-            <span class="rgh-metric__main-iconless">🤔</span>
+	let milestoneLeaderboard, milestoneShameboard;
+	if (leaderboard.board.length) {
+		milestoneLeaderboard =         
+			<span class="rgh-metric__inline">
+				<span class="rgh-metric__main-icon">🏆</span>
+				<div class="rgh-metric__leaderboard AvatarStack AvatarStack--left">
+					<div class="AvatarStack-body tooltipped tooltipped-sw tooltipped-multiline tooltipped-align-right-1" aria-label={leaderboard.message}>
+						{leaderboard.board}
+					</div>
+				</div>
+			</span>
+	}
+	if (shameboard.board.length) {
+        milestoneShameboard = <span class="rgh-metric__inline">
+            <span class="rgh-metric__main-icon">😵</span>
             <div class="rgh-metric__leaderboard AvatarStack AvatarStack--left">
                 <div class="AvatarStack-body tooltipped tooltipped-sw tooltipped-multiline tooltipped-align-right-1" aria-label={shameboard.message}>
                     {shameboard.board}
                 </div>
             </div>
         </span>
-    </span>;
-    
-    return {milestoneStats, milestoneLeaderboard};
+	}
+    return {milestoneStats, milestoneLeaderboard, milestoneShameboard};
 }

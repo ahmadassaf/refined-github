@@ -26,8 +26,13 @@ export default async () => {
 
 	const graphQLResponse = await graph(query);
 	const githubBoard = keyBy(get(graphQLResponse, 'repository.milestone.issues.edges'), 'node.number');
-	const {milestoneStats, milestoneLeaderboard} = await milestoneStatsBuilder(repoInformation, githubBoard);
+	const {milestoneStats, milestoneLeaderboard, milestoneShameboard} = await milestoneStatsBuilder(repoInformation, githubBoard);
+    const leaderboardContainer = select('.repository-content .three-fourths');
     const issuesTable = select('.repository-content .mb-3 .three-fourths');
+    
     issuesTable.parentNode.insertBefore(milestoneStats, issuesTable);
-    select('.repository-content .three-fourths').append(milestoneLeaderboard);
+    // Based on the availability of leaderboard or shameboard data ..
+    (milestoneLeaderboard || milestoneShameboard) && leaderboardContainer.append(<span class="rgh-leaderboard">Leaderboard</span>)
+    milestoneLeaderboard && leaderboardContainer.append(milestoneLeaderboard);
+    milestoneShameboard && leaderboardContainer.append(milestoneShameboard);
 };
