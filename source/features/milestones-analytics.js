@@ -19,7 +19,7 @@ export default async () => {
 		const {ownerName, repoName} = getOwnerAndRepo();
 		const repoInformation = await api(`repos/${ownerName}/${repoName}`); 
 		const state = location.href.includes('state=closed') ? 'CLOSED' : 'OPEN';
-    	const query = `{ repository(owner: ${ownerName} , name: ${repoName}) { milestones(states: ${state}, first: 100) { edges { node { id, number, issues(first: 100) { edges { node { id, number, state, assignees(first: 10) { edges { node { id, avatarUrl, url }}} labels(first: 10) { edges { node { id, name }}}}}}}}}}}`;
+    	const query = `{ repository(owner: ${ownerName} , name: ${repoName}) { milestones(states: ${state}, first: 100) { edges { node { id, number, issues(first: 100) { edges { node { id, number, state, closedAt, createdAt, assignees(first: 10) { edges { node { id, avatarUrl, url }}} labels(first: 10) { edges { node { id, name }}}}}}}}}}}`;
 		const graphQLResponse = await graph(query);
 		const githubBoard = keyBy(get(graphQLResponse, 'repository.milestones.edges'), 'node.number');
 

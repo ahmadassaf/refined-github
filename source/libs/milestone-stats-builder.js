@@ -2,7 +2,7 @@ import {h} from 'dom-chef';
 import {get, each, size, flattenDeep, reduce, keyBy, countBy, keys, filter, merge} from 'lodash';
 import OptionsSync from 'webext-options-sync';
 import {getRandomColor} from './utils';
-import {bug, commit, flame} from './icons';
+import {bug, commit, flame, ruby} from './icons';
 
 export const milestoneStatsBuilder = async(repo, githubBoard, milestoneInformation = {}) => {
 
@@ -26,31 +26,32 @@ export const milestoneStatsBuilder = async(repo, githubBoard, milestoneInformati
     // After making sure we have all the data merged from github and zenhub, calculate all the metrics !
     const closedIssues = filter(milestoneInformation, issue =>  issue.node.state === 'CLOSED');
     const openIssues = filter(milestoneInformation, issue =>  issue.node.state === 'OPEN');
-    const labelsMap = countBy(flattenDeep(closedIssues.map(issue => get(issue, 'node.labels.edges', []))), 'node.name');
+	const labelsMap = countBy(flattenDeep(closedIssues.map(issue => get(issue, 'node.labels.edges', []))), 'node.name');
     const totalBugs = filter(milestoneInformation, issue => {
-            return issue.node.labels.edges.filter(label => {
-                    return label.node.name === '03: Type: Bug';
-            }).length
-    });
+		return issue.node.labels.edges.filter(label => {
+				return label.node.name === '03: Type: Bug';
+		}).length
+	});
     const closedBugs = totalBugs.filter(issue => {
             return issue.node.state === 'CLOSED';
     });
     const processBreaks = filter(milestoneInformation, issue => {
-            return issue.node.labels.edges.filter(label => {
-                    return label.node.name.startsWith('06: Process:');
-            }).length
+		return issue.node.labels.edges.filter(label => {
+				return label.node.name.startsWith('06: Process:');
+		}).length
     });
     const closedProcessBreaks =  processBreaks.filter(issue => {
-            return issue.node.state === 'CLOSED';
+		return issue.node.state === 'CLOSED';
     });
     const totalIssuesEstimate = reduce(milestoneInformation, (accumulator, currentValue) => {
-            return accumulator + (currentValue.estimate || 0 )
+		return accumulator + (currentValue.estimate || 0 )
     }, 0);
     const closedIssuesEstimate = closedIssues.reduce((accumulator, currentValue) => {
-            return accumulator + (currentValue.estimate || 0 )
+		return accumulator + (currentValue.estimate || 0 )
     }, 0);
     const velocity = Math.floor( closedIssuesEstimate/totalIssuesEstimate *  100 ) || 0;
-    /*
+   
+	/*
     * @function getLabelsChart
     * @description Gets the total number of labels for a certain label pattern
     */
@@ -104,6 +105,44 @@ export const milestoneStatsBuilder = async(repo, githubBoard, milestoneInformati
     const leaderboard = buildLeaderboard(closedIssues);
 	const shameboard = buildLeaderboard(openIssues);
 	
+	const buildSLAViolation = (milestoneInformation) => {
+		let totalViolations = 0, violationsDOM;
+		const violations = []; 
+		const SLA_VIOLATIONS = {
+			'01: Priority: P0': '2:#b60205',
+			'01: Priority: P1': '4:#d93f0b',
+			'01: Priority: P2': '5:#fbca04',
+			'01: Priority: P3': '30:#e4d182'
+		};
+		const calculateSLAViolation = (milestone, priority, expectedResolutionTime) => {
+			const ONE_DAY = 24 * 60 * 60 * 1000;
+			return filter(milestone, issue => {
+				const creationDate = new Date(issue.node.createdAt);
+				const closedDate = new Date(issue.node.closedAt);
+				const resolutionTime = Math.round(Math.abs((creationDate.getTime() - closedDate.getTime())/(ONE_DAY)));
+				return issue.node.labels.edges.filter(label => {
+					return issue.node.state === 'CLOSED' && label.node.name === priority && resolutionTime > expectedResolutionTime;
+				}).length;
+			});
+		}	
+		each(SLA_VIOLATIONS, (resolutionTime, priority) => {
+			const _violations = calculateSLAViolation(milestoneInformation, priority, parseInt(resolutionTime.split(':')[0]));
+			if (_violations.length) {
+				let style = {background: resolutionTime.split(':').pop()}
+				totalViolations += _violations.length;
+				violations.push(<span class="rgh-metric__pill" style={style}>{_violations.length} {priority.split(':').pop().trim()}</span>);
+			}
+		});
+		if (violations.length) {
+			violationsDOM = 
+			<div class="rgh-metric">
+				<span class="rgh-metric__main">{ruby()} {totalViolations} SLA Violations</span>
+				{violations}
+			</div>
+			return violationsDOM;
+		};
+		return <i></i>;
+	}
     const milestoneStats =     
     <div class="rgh-milestone-report-container">
         <div class="rgh-metric-column">
@@ -121,7 +160,8 @@ export const milestoneStatsBuilder = async(repo, githubBoard, milestoneInformati
                 <span class="rgh-metric__main">{flame()} Success Rate {velocity}%</span>
                 <span class="rgh-metric__pill rgh-metric__pill-green">{totalIssuesEstimate} Commited</span>
                 <span class="rgh-metric__pill rgh-metric__pill-red">{closedIssuesEstimate} Closed</span>
-            </div>
+			</div>
+			{buildSLAViolation(milestoneInformation)}
         </div>
         <div class="rgh-metric-column">
             <span class="rgh-metric__chart">

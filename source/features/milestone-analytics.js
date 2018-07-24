@@ -12,7 +12,7 @@ export default async () => {
     const {ownerName, repoName} = getOwnerAndRepo();
     const repoInformation = await api(`repos/${ownerName}/${repoName}`); 
     const milestoneNumber = location.href.split('?')[0].split('/').pop();
-    const query = `{ repository(owner: ${ownerName} , name: ${repoName}) { milestone(number: ${milestoneNumber}) { issues(first: 100) { edges { node { id, number, state, assignees(first: 100) { edges { node { id, avatarUrl, url }}} labels(first: 100) { edges { node { id, name }}}}}}}}}`;
+    const query = `{ repository(owner: ${ownerName} , name: ${repoName}) { milestone(number: ${milestoneNumber}) { issues(first: 100) { edges { node { id, number, state, closedAt, createdAt, assignees(first: 100) { edges { node { id, avatarUrl, url }}} labels(first: 100) { edges { node { id, name }}}}}}}}}`;
 
     // Remove the Zenhub board link and add the custom icon next to the milestone title
     if (select('.zh-milestone-link a')) {
