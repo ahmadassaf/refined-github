@@ -1,5 +1,6 @@
 import {h} from 'dom-chef';
 import select from 'select-dom';
+import * as pageDetect from '../libs/page-detect';
 import {trashcan} from '../libs/icons';
 
 export default function () {
@@ -49,7 +50,7 @@ export default function () {
             error: 'should belong to a milestone  🏁',
             filter: (label) => {return label},
             condition: (filteredLabels, labels, issue) => {
-                return !select.all('.milestone-link', issue).length
+                return !select.all('.milestone-link', issue).length && !pageDetect.isMilestone()
             }
         },
         MULTIPLE_PRIOITIES: {

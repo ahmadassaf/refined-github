@@ -175,12 +175,12 @@ svg.octicon-flame {
 
 .milestone {
 
-    .rgh-milestone-report-container, .rgh-leaderboard-container {
+    .milestone-stats-container {
         display: none;
     }
     &.analytics-enabled {
-        .rgh-milestone-report-container, .rgh-leaderboard-container {
-            display: flex;
+        .milestone-stats-container {
+            display: block;
         }   
     }
 }

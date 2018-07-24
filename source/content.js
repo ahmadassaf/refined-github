@@ -85,6 +85,7 @@ import addBeameryAdvancedFilters from './features/add-beamery-advanced-filters';
 import beameryIssueMetaInspector from './features/beamery-issue-meta-inspector';
 import milestoneAnalytics from './features/milestone-analytics';
 import milestonesAnalytics from './features/milestones-analytics';
+import expandIssueLink from './features/expand-issue-link';
 
 import * as pageDetect from './libs/page-detect';
 import {safeElementReady, enableFeature, safeOnAjaxedPages, injectCustomCSS} from './libs/utils';
@@ -263,6 +264,7 @@ function ajaxedPagesHandler() {
 	}
 
 	if (pageDetect.isIssue() || pageDetect.isPRConversation()) {
+		enableFeature(expandIssueLink);
 		enableFeature(addJumpToBottomLink);
 	}
 
